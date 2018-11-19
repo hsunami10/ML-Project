@@ -1,13 +1,16 @@
 var GAME_WIDTH = 1000; //pixels
 var GAME_HEIGHT = 500; //pixels
-var GAME_RIGHT_BOUNDARY = 1000;
+var GAME_RIGHT_BOUNDARY = GAME_WIDTH;
 var GAME_LEFT_BOUNDARY = 0;
-var GAME_BOTTOM_BOUNDARY = 0;
+
 
 var ACCEL_GRAVITY = -3000; //pixels per second
 
 var PLAYER_HEIGHT = 50; //pixels
 var PLAYER_WIDTH = 50; //pixels
+
+var GAME_BOTTOM_BOUNDARY = GAME_HEIGHT - PLAYER_HEIGHT;
+
 var PLAYER_FRICTION = 0.990; //fraction out of 1
 var MAX_PLAYER_SPEED = 400; //pixels per second
 var PLAYER_HORIZ_ACCEL = 1600; //pixels per second^2
@@ -20,6 +23,10 @@ var PLAYER_SHIELD_REFRESH_RATE = 50; //points per second
 var PLAYER_SHIELD_USE_RATE = 150;
 var PLAYER_ENERGY_REFRESH_RATE = 30; //points per second
 var PLAYER_JUMP_SPEED = 1200; //pixels per second
+var PLAYER_EYE_COLOR = "rgb(0,0,0)"
+var PLAYER_ONE_START_X = GAME_WIDTH / 2 - 200;
+var PLAYER_TWO_START_X = GAME_WIDTH / 2 + 200;
+var PLAYER_START_Y = GAME_BOTTOM_BOUNDARY;
 
 //array locs for the input types
 var PLAYER_INPUT_LEFT = 0;
@@ -33,6 +40,13 @@ var HUMAN_KEY_RIGHT = "ArrowRight";
 var HUMAN_KEY_JUMP = "ArrowUp";
 var HUMAN_KEY_SHOOT = "Space";
 var HUMAN_KEY_SHIELD = "ArrowDown"
+
+
+var HUMAN_KEY_LEFT2 = "KeyA";
+var HUMAN_KEY_RIGHT2 = "KeyD";
+var HUMAN_KEY_JUMP2 = "KeyW";
+var HUMAN_KEY_SHOOT2 = "KeyC";
+var HUMAN_KEY_SHIELD2 = "KeyS"
 
 //projectile should be circle I guess?
 var PROJECTILE_SPEED = 8; //pixels per second
@@ -54,6 +68,11 @@ var INFO_ENERGY_COLOR = 'rgb(255, 0, 0)';
 var INFO_SHIELD_COLOR = 'rgb(0, 0, 255)';
 var INFO_OUTLINE_COLOR = 'rgb(0, 0, 0)';
 
+
+var GAME_OVER_FADE_RATE = 1;
+var GAME_OVER_FADE_OFFSET = 2;
+var GAME_OVER_FADE_MAX = 1;
+
 var canvas = document.getElementById('canvas');
 canvas.width = 1000;
 canvas.height = 500;
@@ -71,12 +90,14 @@ document.addEventListener('keydown', keylistener);
 document.addEventListener('keyup', keylistener);
 
 class Input {
-
+  
   constructor(input_type) {
     this.input_type = input_type;
+
   }
 
   evaluate() {
+    
     var input_arr = Array(5);
     for (var i = 0; i < 5; i++) {
       input_arr[i] = false;
@@ -90,8 +111,15 @@ class Input {
       input_arr[PLAYER_INPUT_SHOOT] = keys[HUMAN_KEY_SHOOT];
 
     }
+    else if (this.input_type == "human2") {
+      input_arr[PLAYER_INPUT_LEFT] = keys[HUMAN_KEY_LEFT2];
+      input_arr[PLAYER_INPUT_RIGHT] = keys[HUMAN_KEY_RIGHT2];
+      input_arr[PLAYER_INPUT_JUMP] = keys[HUMAN_KEY_JUMP2];
+      input_arr[PLAYER_INPUT_SHIELD] = keys[HUMAN_KEY_SHIELD2];
+      input_arr[PLAYER_INPUT_SHOOT] = keys[HUMAN_KEY_SHOOT2];
+    }
     else {
-      input_arr[PLAYER_INPUT_SHOOT] = true;
+      input_arr[PLAYER_INPUT_SHOOT] = false;
     }
 
     return input_arr;
@@ -107,6 +135,7 @@ class Projectile {
     this.game_frame = game_frame;
     this.x = x;
     this.y = y;
+    this.visible = true;
     
   }
 
@@ -129,13 +158,16 @@ class Projectile {
   }
 
   draw(){
-    this.game_frame.beginPath();
-    this.game_frame.arc(this.x, this.y, this.size, 0, 2 * Math.PI, false);
-    this.game_frame.fillStyle = this.color;
-    this.game_frame.fill();
-    this.game_frame.lineWidth = 5;
-    this.game_frame.strokeStyle = '#003300';
-    this.game_frame.stroke();
+    if (this.visible) { 
+      this.game_frame.beginPath();
+      this.game_frame.arc(this.x, this.y, this.size, 0, 2 * Math.PI, false);
+      this.game_frame.fillStyle = this.color;
+      this.game_frame.fill();
+      this.game_frame.lineWidth = 5;
+      this.game_frame.strokeStyle = '#003300';
+      this.game_frame.stroke();
+    }
+    
   }
   
 }
@@ -318,26 +350,245 @@ class Player {
     if (this.shield < 0) {
       this.health += this.shield;
       this.shield = 0;
+      if (this.health < 0){
+        this.health = 0;
+      }
+    }
+
+    for (var i in this.projectiles){
+      this.projectiles[i].update();
     }
 
   }
   
   draw() {
+    
     this.game_frame.fillStyle = this.color;
     this.game_frame.fillRect(this.x, this.y, this.width, this.height);
+    
+
+    this.game_frame.fillStyle = PLAYER_EYE_COLOR;
+    this.game_frame.beginPath();
+    if (this.player_direction > 0){
+      this.game_frame.beginPath();
+      this.game_frame.arc(this.x + 0.75 * this.width, this.y + 0.25 * this.height, this.width / 8.0, 0, 2 * Math.PI, false);
+      this.game_frame.fill();
+      this.game_frame.beginPath();
+      this.game_frame.arc(this.x + 0.75 * this.width, this.y + 0.75 * this.height, this.width / 8.0, 0, 2 * Math.PI, false);
+      this.game_frame.fill();
+    }
+    else {
+      this.game_frame.beginPath();
+      this.game_frame.arc(this.x + 0.25 * this.width, this.y + 0.25 * this.height, this.width / 8.0, 0, 2 * Math.PI, false);
+      this.game_frame.fill();
+      this.game_frame.beginPath();
+      this.game_frame.arc(this.x + 0.25 * this.width, this.y + 0.75 * this.height, this.width / 8.0, 0, 2 * Math.PI, false);
+      this.game_frame.fill();
+    }
+    
+    this.game_frame.fill();
     this.draw_energy()
     this.draw_health();
     this.draw_shield();
+    for (var i in this.projectiles){
+      this.projectiles[i].draw();
+    }
   }
 }
 
 
 
+class Game {
+  constructor(p1, p2, game_length, game_canvas) {
+    this.p1 = p1;
+    this.p2 = p2;
+    this.game_length = game_length;
+    this.game_start = game_length;
+    this.game_on = false;
+    this.game_canvas = game_canvas;
+    this.frame_rate = 30.0;
+    this.game_ended = null;
+    this.winner = null;
+    
+  }
+
+  state(){
+    var p1 = this.p1;
+    var p2 = this.p2;
+    var game_state = [p1.x, p1.y, p1.dx, p1.dy, p1.health, p1.shield, p1.energy, p1.shield_equipped? 1 : 0,
+                    p2.x, p2.y, p2.dx, p2.dy, p2.health, p2.shield, p2.energy, p2.shield_equipped? 1: 0];
+  }
+
+  update(frame_time) {
+    if (this.game_on) {
+      this.detect_collisions();
+    }
+    
+    this.p1.update(frame_time);
+    this.p2.update(frame_time);
+    
+    var result = this.check_winner();
+    if (result != null && this.game_on){
+      this.game_on = false;
+      this.p1.input.input_type = "dead";
+      this.p2.input.input_type = "dead";
+      this.game_ended = new Date().getTime();
+      if (result == this.p1) {
+        this.winner = "Player 1";
+      }
+      else if (result == this.p2) {
+        this.winner = "Player 2";
+      }
+      else {
+        this.winner = "No one"
+      }
+      
+    }
+    
+    if (frame_time > 0) {
+      this.frame_rate = 0.9 * this.frame_rate + 0.1 / frame_time;
+    }
+  }
+
+
+  handle_collision(player, projectile){
+    projectile.visible = false;
+    if (player.shield_equipped){
+      
+      player.shield -= projectile.damage;
+      if (player.shield < 0) {
+        player.health += player.health
+        if (player.health < 0) {
+          player.health = 0;
+        }
+        player.shield = 0;
+      }
+    }
+    else {
+      player.health -= projectile.damage;
+      if (player.health < 0){
+        player.health = 0;
+      }
+    }
+  }
+
+  detect_collisions() {
+    for (var i in this.p1.projectiles) {
+      if (this.is_colliding(this.p2, this.p1.projectiles[i])) {
+          this.handle_collision(this.p2, this.p1.projectiles[i]);
+      }
+    }
+
+    for (var i in this.p2.projectiles) {
+      if (this.is_colliding(this.p1, this.p2.projectiles[i])) {
+          this.handle_collision(this.p1, this.p2.projectiles[i]);
+      }
+    }
+  }
+
+  draw_time(){
+    var t = new Date().getTime();
+    t =  Math.floor(100 * (this.game_length + (this.game_start - t) / 1000)) / 100;
+    if (t < 0){
+      t = 0;
+    }
+    
+    this.textAlign = "center";
+    this.game_canvas.font = "30px Arial";
+    this.game_canvas.fillStyle = "rgb(0,0,0)";
+    this.game_canvas.fillText(t.toString(), GAME_WIDTH / 2, 50);
+  }
+
+  is_colliding(player, projectile) {
+    if (!projectile.visible)
+    {
+      return false;
+    }
+    var x = player.x + player.width / 2;
+    var y = player.y + player.height / 2;
+    var r = Math.sqrt(player.width * player.height) / 2;
+    var x2 = projectile.x;
+    var  y2 = projectile.y;
+    var r2 = projectile.size;
+
+    return Math.sqrt(Math.pow((x2 - x), 2) + Math.pow((y2 - y), 2)) < r + r2;
+  }
+
+  check_winner(){
+    var t = new Date().getTime();
+    t = (t - this.game_start) / 1000;
+    if(t > this.game_length) {
+      if(this.p1.health > this.p2.health){
+        return this.p1;
+      }
+      else if (this.p2.health > this.p1.health){
+        return this.p2;
+      }
+      else {
+        return "Draw"
+      }
+    }
+    if (this.p1.health == 0){
+      return this.p2;
+    }
+    if (this.p2.health == 0){
+      return this.p1;
+    }
+
+    return null;
+  }
+
+  draw() {
+    
+    this.game_canvas.clearRect(0, 0, canvas.width, canvas.height);
+    this.game_canvas.fillStyle = 'rgb(200,200,200)';
+    this.game_canvas.fillRect(0, 0, canvas.width, canvas.height);
+    this.p1.draw();
+    this.p2.draw();
+    this.game_canvas.font = "10px Arial";
+    this.game_canvas.fillStyle = 'rgb(255,255,255)';
+    this.game_canvas.fillText("FPS: " + Math.floor(this.frame_rate).toString(), 950, 20);
+
+    this.draw_time();
+
+    if (this.game_ended != null) {
+      var dt = new Date().getTime();
+      dt = (dt - this.game_ended) / 1000.0;
+      
+      var alpha = GAME_OVER_FADE_MAX  / (1 + Math.exp(-GAME_OVER_FADE_RATE*(dt - GAME_OVER_FADE_OFFSET))).toString();
+      this.game_canvas.textAlign = "center";
+      this.game_canvas.font = "45px Arial";
+      this.game_canvas.fillStyle = 'rgba(0,0,0,' + alpha + ')';
+      this.game_canvas.fillText(this.winner + " wins!", GAME_WIDTH / 2 , GAME_HEIGHT / 3);
+      
+    }
+    
+    
+  }
+
+  start(){
+    this.game_on = true;
+    this.game_start = new Date().getTime();
+  }
+
+
+  reset(){
+    this.game_on = false;
+    this.game_start = game_length;
+    this.p1 = new Player(PLAYER_ONE_START_X, PLAYER_START_Y, this.game_canvas, this.p1.input, 50);
+    this.p2 = new Player(PLAYER_TWO_START_X, PLAYER_START_Y, this.game_canvas, this.p2.input, 710);
+  }
+}
+
 var p_input = new Input("human");
-var p1 = new Player(canvas.width / 2 - dims / 2, bottom, c, p_input, 50);
+var p_input2 = new Input("human2");
+var p1 = new Player(PLAYER_ONE_START_X, PLAYER_START_Y, c, p_input, 50);
+var p2 = new Player(PLAYER_TWO_START_X, PLAYER_START_Y, c, p_input2, 710);
+var game = new Game(p1, p2, 10, c);
 var t1 = new Date().getTime();
 var t2 = new Date().getTime();
 var dt = null;
+game.start();
 
 
 function animate(timestamp) {
@@ -346,18 +597,10 @@ function animate(timestamp) {
   dt = (t2 - t1) / 1000.0;
   t1 = t2;
   
-  console.log(1.0/dt);
-  p1.update(dt);
-  for (var i in p1.projectiles){
-    p1.projectiles[i].update();
-  }
-  c.clearRect(0, 0, canvas.width, canvas.height);
-  c.fillStyle = 'rgb(200,200,200)';
-  c.fillRect(0, 0, canvas.width, canvas.height);
-  p1.draw();
-  for (var i in p1.projectiles){
-    p1.projectiles[i].draw();
-  }
+  
+  game.update(dt);
+  game.draw();
+ 
   
 }
 animate();
