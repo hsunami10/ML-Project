@@ -201,6 +201,7 @@ class Player {
   }
 
   draw_health() {
+    this.game_frame.strokeStyle = '#000000';
     var y = INFO_BAR_SEP;
     var length = this.health / PLAYER_HP * INFO_BAR_WIDTH;
     this.game_frame.lineWidth = 1;
@@ -213,6 +214,7 @@ class Player {
   }
 
   draw_energy() {
+    this.game_frame.strokeStyle = '#000000';
     this.game_frame.lineWidth = 1;
     var y = 2 * INFO_BAR_SEP + INFO_BAR_HEIGHT;
     var length = this.energy / PLAYER_MAX_ENERGY * INFO_BAR_WIDTH;
@@ -234,6 +236,7 @@ class Player {
   }
 
   draw_shield() {
+    this.game_frame.strokeStyle = '#000000';
     var y = INFO_BAR_SEP * 3 + 2 * INFO_BAR_HEIGHT;
     this.game_frame.lineWidth = 1;
     var length = this.shield / PLAYER_MAX_SHIELD * INFO_BAR_WIDTH;
@@ -361,6 +364,16 @@ class Player {
 
   }
   
+  draw_equipped_shield(){
+    this.game_frame.beginPath();
+    this.game_frame.arc(this.x + this.width/2, this.y + this.height/2, this.width/Math.sqrt(2), 0, 2 * Math.PI, false);
+    this.game_frame.fillStyle = "rgba(0,0,255,0.5)";
+    this.game_frame.fill();
+    this.game_frame.lineWidth = 3;
+    this.game_frame.strokeStyle = '#0000ff';
+    this.game_frame.stroke();
+  }
+
   draw() {
     
     this.game_frame.fillStyle = this.color;
@@ -390,6 +403,9 @@ class Player {
     this.draw_energy()
     this.draw_health();
     this.draw_shield();
+    if (this.shield_equipped){
+      this.draw_equipped_shield();
+    }
     for (var i in this.projectiles){
       this.projectiles[i].draw();
     }
@@ -399,9 +415,12 @@ class Player {
 
 
 class Game {
-  constructor(p1, p2, game_length, game_canvas) {
+  constructor(p1, p2, game_length, game_canvas, frame_skip, reward_shift, frame_hold) {
     this.p1 = p1;
     this.p2 = p2;
+    this.frame_skip = frame_skip;
+    this.frame_val = 0;
+    this.frame_hold = frame_hold;
     this.game_length = game_length;
     this.game_start = game_length;
     this.game_on = false;
@@ -409,17 +428,127 @@ class Game {
     this.frame_rate = 30.0;
     this.game_ended = null;
     this.winner = null;
+    this.p1_buffer = [];
+    this.p2_buffer = [];
     
   }
+  get_projectiles(player){
+    var proj_1x = 0;
+    var proj_2x = 0;
+    var proj_1y = 0;
+    var proj_2y = 0;
+    var proj_1s = 0;
+    var proj_2s = 0;
+    var proj_1v = 0;
+    var proj_2v = 0;
+    if (player.projectiles.length == 0){
+      proj_1x = player.x;
+      proj_1y = player.y;
+      proj_2x = player.x;
+      proj_2y = player.y;
+      proj_1v = player.player_direction * PROJECTILE_SPEED;
+      proj_2v = player.player_direction * PROJECTILE_SPEED;
+      proj_2s = PROJECTILE_SIZE_SMALL;
+      if (player.energy>=PROJECTILE_REQ_LARGE){
+        proj_1s = PROJECTILE_SIZE_LARGE;
+        
+      }
+      else if (player.energy >= PROJECTILE_REQ_MEDIUM){
+        proj_1s = PROJECTILE_SIZE_MEDIUM;
+      }
+      else{
+        proj_1s = PROJECTILE_SIZE_SMALL;
+      }
 
-  state(){
-    var p1 = this.p1;
-    var p2 = this.p2;
-    var game_state = [p1.x, p1.y, p1.dx, p1.dy, p1.health, p1.shield, p1.energy, p1.shield_equipped? 1 : 0,
-                    p2.x, p2.y, p2.dx, p2.dy, p2.health, p2.shield, p2.energy, p2.shield_equipped? 1: 0];
+    }
+    else if(player.projectiles.length == 1){
+      
+      proj_1x = player.projectiles[0].x;
+      proj_1y = player.projectiles[0].y;
+      proj_1v = player.projectiles[0].direction * PROJECTILE_SPEED
+      proj_1s = player.projectiles[0].size;
+      
+
+      proj_2x = player.x;
+      proj_2y = player.y;
+      proj_2v = player.player_direction * PROJECTILE_SPEED;
+      if (player.energy>=PROJECTILE_REQ_LARGE){
+        proj_2s = PROJECTILE_SIZE_LARGE;
+        
+      }
+      else if (player.energy >= PROJECTILE_REQ_MEDIUM){
+        proj_2s = PROJECTILE_SIZE_MEDIUM;
+      }
+      else{
+        proj_2s = PROJECTILE_SIZE_SMALL;
+      }
+    }
+    else {
+      proj_1x = player.projectiles[0].x;
+      proj_1y = player.projectiles[0].y;
+      proj_1v = player.projectiles[0].direction * PROJECTILE_SPEED
+      proj_1s = player.projectiles[0].size;
+
+      proj_2x = player.projectiles[1].x;
+      proj_2y = player.projectiles[1].y;
+      proj_2v = player.projectiles[1].direction * PROJECTILE_SPEED
+      proj_2s = player.projectiles[1].size;
+
+    }
+
+
+    return [proj_1x, proj_1y, proj_1v, proj_1s, proj_2x, proj_2y, proj_2v, proj_2s];
+  }
+  state(p1, p2){
+    
+    var game_state1 = [
+      p1.x, 
+      p1.y, 
+      p1.dx, 
+      p1.dy, 
+      p1.health, 
+      p1.shield, 
+      p1.energy, 
+      p1.shield_equipped? 1 : 0];
+
+    game_state1 = game_state1.concat(this.get_projectiles(p1));
+
+    
+    var game_state2 = [p2.x, 
+      p2.y, 
+      p2.dx, 
+      p2.dy, 
+      p2.health, 
+      p2.shield, 
+      p2.energy, 
+      p2.shield_equipped? 1: 0];
+
+    game_state2 = game_state2.concat(this.get_projectiles(p2));
+    game_state1 = game_state1.concat(game_state2);
+
+    return game_state1;
+
+  }
+
+  randomize(){
+    this.p1.x = Math.random() * GAME_WIDTH - this.p1.width;
+    this.p2.x = Math.random() * GAME_WIDTH - this.p2.width;
+    this.p1.y = Math.random() * GAME_HEIGHT / 2 + GAME_HEIGHT / 2 + this.p1.height;
+    this.p2.y = Math.random() * GAME_HEIGHT / 2 + GAME_HEIGHT / 2 + this.p2.height;
+
+    this.p1.dx = Math.random() * MAX_PLAYER_SPEED * 2 - MAX_PLAYER_SPEED;
+    this.p2.dx = Math.random() * MAX_PLAYER_SPEED * 2 - MAX_PLAYER_SPEED;
+
+
+
   }
 
   update(frame_time) {
+    this.frame_val++;
+    if (this.frame_val % this.frame_skip == 0){
+      this.p1_buffer.push(this.state(this.p1, this.p2));
+      this.p2_buffer.push(this.state(this.p2, this.p1));
+    }
     if (this.game_on) {
       this.detect_collisions();
     }
@@ -567,6 +696,13 @@ class Game {
   }
 
   start(){
+    this.p1_buffer = [];
+    this.p2_buffer = [];
+    for(var i = 0; i < this.frame_hold; i++){
+      this.p1_buffer.push(this.state(this.p1, this.p2));
+      this.p2_buffer.push(this.state(this.p2, this.p1));
+    }
+    this.frame_val = 0;
     this.game_on = true;
     this.game_start = new Date().getTime();
   }
@@ -584,10 +720,11 @@ var p_input = new Input("human");
 var p_input2 = new Input("human2");
 var p1 = new Player(PLAYER_ONE_START_X, PLAYER_START_Y, c, p_input, 50);
 var p2 = new Player(PLAYER_TWO_START_X, PLAYER_START_Y, c, p_input2, 710);
-var game = new Game(p1, p2, 10, c);
+var game = new Game(p1, p2, 10, c, 1, 0, 4);
 var t1 = new Date().getTime();
 var t2 = new Date().getTime();
 var dt = null;
+game.randomize();
 game.start();
 
 
