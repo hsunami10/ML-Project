@@ -1,6 +1,7 @@
-import * as tf from '@tensorflow/tfjs';
 
-SERVER_PATH = "localhost:3001/"
+
+
+SERVER_PATH = "http://localhost:3001/"
 SAVE_ADDRESS_PATH = "api/eecs349_project/save"
 LOAD_ADDRESS_PATH = "api/eecs349_project/load"
 CHECK_LOAD = "api/eecs349_project/check_load"
@@ -84,7 +85,7 @@ class DeepQNetwork {
 
         save(){
             var query_params = "?name=" + this.name + "&time=" + this.training_time.toString();
-            console.log(this.training_time);
+            console.log(SERVER_PATH + SAVE_ADDRESS_PATH + query_params);
             this.model.save(SERVER_PATH + SAVE_ADDRESS_PATH + query_params);
         }
 
