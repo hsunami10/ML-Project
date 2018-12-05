@@ -28,12 +28,13 @@ class Input {
     this.frame_buffer = new FrameBuffer(frames, this.frame_buffer.frame_skip);
   }
 
-  update_frames(frame_skip){
+  update_frames_skip(frame_skip){
     this.network = new DeepQNetwork(this.network.layers, this.network.frames, frame_skip);
     this.frame_buffer = new FrameBuffer(this.frame_buffer.num_frames, frame_skip);
   }
 
   map_action_to_values(action){
+    
     for (var i = 4; i >=0; i--){
       if (action >= Math.pow(2, i)){
         action = action - Math.pow(2, i);
@@ -52,7 +53,7 @@ class Input {
         action += Math.pow(2, i);
       }
     }
-    console.log(action);
+    
     return action;
   }
 
@@ -84,6 +85,7 @@ class Input {
     }
     else if (this.input_type == "ai"){
       this.map_action_to_values(this.network.predict_action(state))
+      
     }
 
     else {

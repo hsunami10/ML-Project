@@ -103,7 +103,7 @@ class Player {
 
     this.dx = this.dx * PLAYER_FRICTION;
     this.x += this.dx * frame_time;
-
+    
     if (this.x <= game_enum.GAME_LEFT_BOUNDARY) {
       this.x = 0;
       this.dx = 0;

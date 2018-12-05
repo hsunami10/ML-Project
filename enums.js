@@ -1,7 +1,7 @@
 const game_enum = {
   GAME_WIDTH: 1000, //pixels
   GAME_HEIGHT: 500, //pixels
-  GAME_RIGHT_BOUNDARY: this.GAME_WIDTH,
+  GAME_RIGHT_BOUNDARY: 1000,
   GAME_LEFT_BOUNDARY: 0
 };
 
@@ -35,6 +35,7 @@ const settings_menu = {
   },
   button_types: {
     HUMAN: 'human',
+    HUMAN2: 'human2',
     AI: 'ai',
     FPI1: 'fpi1',
     FPI2: 'fpi2',
@@ -121,5 +122,6 @@ const settings_menu = {
 
 const player_type = {
   HUMAN: settings_menu.button_types.HUMAN,
+  HUMAN2: settings_menu.button_types.HUMAN2,
   AI: settings_menu.button_types.AI
 };

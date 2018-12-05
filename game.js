@@ -138,8 +138,11 @@ class Game {
       this.p2.input.frame_buffer.add_frame(p2_frame);
     }
 
-    this.p1.update(frame_time);
-    this.p2.update(frame_time);
+    if (this.game_state == states.GAME_ON || this.game_state == states.GAME_ON){
+      this.p1.update(frame_time);
+      this.p2.update(frame_time);
+    }
+    
 
     if (this.game_state == states.GAME_ON) {
       this.p1.input.frame_buffer.add_action(this.p1.input.map_values_to_action());

@@ -43,143 +43,143 @@ class Button {
     switch (this.button_type) {
       case settings_menu.button_types.HUMAN:
         if (this.player === 'p1') {
-          if (p1.type === player_type.HUMAN) {
+          if (p1.input.input_type === player_type.HUMAN) {
             showBorder = true;
           }
         } else {
-          if (p2.type === player_type.HUMAN) {
+          if (p2.input.input_type === player_type.HUMAN2) {
             showBorder = true;
           }
         }
         break;
       case settings_menu.button_types.AI:
         if (this.player === 'p1') {
-          if (p1.type === player_type.AI) {
+          if (p1.input.input_type === player_type.AI) {
             showBorder = true;
           }
         } else {
-          if (p2.type === player_type.AI) {
+          if (p2.input.input_type === player_type.AI) {
             showBorder = true;
           }
         }
         break;
       case settings_menu.button_types.FPI1:
         if (this.player === 'p1') {
-          if (p1.frames_per_input === 1) {
+          if (p1.input.network.frames === 1) {
             showBorder = true;
           }
         } else {
-          if (p2.frames_per_input === 1) {
+          if (p2.input.network.frames === 1) {
             showBorder = true;
           }
         }
         break;
       case settings_menu.button_types.FPI2:
         if (this.player === 'p1') {
-          if (p1.frames_per_input === 2) {
+          if (p1.input.network.frames === 2) {
             showBorder = true;
           }
         } else {
-          if (p2.frames_per_input === 2) {
+          if (p2.input.network.frames === 2) {
             showBorder = true;
           }
         }
         break;
       case settings_menu.button_types.FPI3:
         if (this.player === 'p1') {
-          if (p1.frames_per_input === 3) {
+          if (p1.input.network.frames === 3) {
             showBorder = true;
           }
         } else {
-          if (p2.frames_per_input === 3) {
+          if (p2.input.network.frames === 3) {
             showBorder = true;
           }
         }
         break;
       case settings_menu.button_types.FPI4:
         if (this.player === 'p1') {
-          if (p1.frames_per_input === 4) {
+          if (p1.input.network.frames === 4) {
             showBorder = true;
           }
         } else {
-          if (p2.frames_per_input === 4) {
+          if (p2.input.network.frames === 4) {
             showBorder = true;
           }
         }
         break;
       case settings_menu.button_types.LAYERS1:
         if (this.player === 'p1') {
-          if (p1.layers === 1) {
+          if (p1.input.network.layers === 1) {
             showBorder = true;
           }
         } else {
-          if (p2.layers === 1) {
+          if (p2.input.network.layers === 1) {
             showBorder = true;
           }
         }
         break;
       case settings_menu.button_types.LAYERS2:
         if (this.player === 'p1') {
-          if (p1.layers === 2) {
+          if (p1.input.network.layers === 2) {
             showBorder = true;
           }
         } else {
-          if (p2.layers === 2) {
+          if (p2.input.network.layers === 2) {
             showBorder = true;
           }
         }
         break;
       case settings_menu.button_types.LAYERS3:
         if (this.player === 'p1') {
-          if (p1.layers === 3) {
+          if (p1.input.network.layers === 3) {
             showBorder = true;
           }
         } else {
-          if (p2.layers === 3) {
+          if (p2.input.network.layers === 3) {
             showBorder = true;
           }
         }
         break;
       case settings_menu.button_types.F_SKIP1:
         if (this.player === 'p1') {
-          if (p1.frame_skip === 1) {
+          if (p1.input.network.frame_skip === 1) {
             showBorder = true;
           }
         } else {
-          if (p2.frame_skip === 1) {
+          if (p2.input.network.frame_skip === 1) {
             showBorder = true;
           }
         }
         break;
       case settings_menu.button_types.F_SKIP2:
         if (this.player === 'p1') {
-          if (p1.frame_skip === 2) {
+          if (p1.input.network.frame_skip === 2) {
             showBorder = true;
           }
         } else {
-          if (p2.frame_skip === 2) {
+          if (p2.input.network.frame_skip === 2) {
             showBorder = true;
           }
         }
         break;
       case settings_menu.button_types.F_SKIP3:
         if (this.player === 'p1') {
-          if (p1.frame_skip === 3) {
+          if (p1.input.network.frame_skip === 3) {
             showBorder = true;
           }
         } else {
-          if (p2.frame_skip === 3) {
+          if (p2.input.network.frame_skip === 3) {
             showBorder = true;
           }
         }
         break;
       case settings_menu.button_types.F_SKIP4:
         if (this.player === 'p1') {
-          if (p1.frame_skip === 4) {
+          if (p1.input.network.frame_skip === 4) {
             showBorder = true;
           }
         } else {
-          if (p2.frame_skip === 4) {
+          if (p2.input.network.frame_skip === 4) {
             showBorder = true;
           }
         }
