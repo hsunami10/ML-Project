@@ -275,12 +275,51 @@ class Game {
         this.game_canvas.fillStyle = 'rgb(0,0,0)';
         this.game_canvas.textAlign="center";
         this.game_canvas.textBaseline = "middle";
-        this.game_canvas.fillText('P1', settings_menu.P1_CENTER, settings_menu.TITLE_Y);
-        this.game_canvas.fillText('P2', settings_menu.P2_CENTER, settings_menu.TITLE_Y);
+        this.game_canvas.fillText('P1', P1_X_CENTER, settings_menu.TITLE_Y);
+        this.game_canvas.fillText('P2', P2_X_CENTER, settings_menu.TITLE_Y);
+        this.game_canvas.font = '18px Arial';
+        this.game_canvas.fillText('Frames Per Input', P1_X_CENTER, settings_menu.title_positions.fpi.Y);
+        this.game_canvas.fillText('Frames Per Input', P2_X_CENTER, settings_menu.title_positions.fpi.Y);
+        this.game_canvas.fillText('Number of Layers', P1_X_CENTER, settings_menu.title_positions.layers.Y);
+        this.game_canvas.fillText('Number of Layers', P2_X_CENTER, settings_menu.title_positions.layers.Y);
+        this.game_canvas.fillText('Frame Skips', P1_X_CENTER, settings_menu.title_positions.frame_skips.Y);
+        this.game_canvas.fillText('Frame Skips', P2_X_CENTER, settings_menu.title_positions.frame_skips.Y);
+        this.game_canvas.fillText('Game Length', game_enum.GAME_WIDTH / 2, settings_menu.title_positions.game_length.Y);
 
         back_button.draw();
         p1_human_type_button.draw();
+        p2_human_type_button.draw();
         p1_ai_type_button.draw();
+        p2_ai_type_button.draw();
+
+        p1_fpi1_button.draw();
+        p1_fpi2_button.draw();
+        p1_fpi3_button.draw();
+        p1_fpi4_button.draw();
+        p2_fpi1_button.draw();
+        p2_fpi2_button.draw();
+        p2_fpi3_button.draw();
+        p2_fpi4_button.draw();
+
+        p1_layers1_button.draw();
+        p1_layers2_button.draw();
+        p1_layers3_button.draw();
+        p2_layers1_button.draw();
+        p2_layers2_button.draw();
+        p2_layers3_button.draw();
+
+        p1_fskip1_button.draw();
+        p1_fskip2_button.draw();
+        p1_fskip3_button.draw();
+        p1_fskip4_button.draw();
+        p2_fskip1_button.draw();
+        p2_fskip2_button.draw();
+        p2_fskip3_button.draw();
+        p2_fskip4_button.draw();
+
+        game_length1_button.draw();
+        game_length2_button.draw();
+        game_length3_button.draw();
         break;
       case states.GAME_ON:
         this.p1.draw();

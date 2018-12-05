@@ -29,7 +29,10 @@ class Button {
     if (this.isHovering()) {
       if (this.navigate_click) {
         game.set_game_state(this.navigate_click);
-      } else {
+        if (this.click_callback) {
+          this.click_callback();
+        }
+      } else if (this.click_callback) {
         this.click_callback();
       }
     }
@@ -179,6 +182,21 @@ class Button {
           if (p2.frame_skip === 4) {
             showBorder = true;
           }
+        }
+        break;
+      case settings_menu.button_types.GAME_LEN1:
+        if (game.game_length === 15) {
+          showBorder = true;
+        }
+        break;
+      case settings_menu.button_types.GAME_LEN2:
+        if (game.game_length === 30) {
+          showBorder = true;
+        }
+        break;
+      case settings_menu.button_types.GAME_LEN3:
+        if (game.game_length === 45) {
+          showBorder = true;
         }
         break;
       default:
