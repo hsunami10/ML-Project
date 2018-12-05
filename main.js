@@ -117,7 +117,6 @@ var back_button = new Button(c, settings_menu.back_button.X, settings_menu.back_
 var p1_human_type_button = new Button(c, 100, 100, settings_menu.type_button.WIDTH, settings_menu.type_button.HEIGHT, 'Human', null, () => p1.type = player_type.HUMAN, '14px Arial', 'p1', settings_menu.button_types.HUMAN);
 var p1_ai_type_button = new Button(c, 400, 100, settings_menu.type_button.WIDTH, settings_menu.type_button.HEIGHT, 'AI', null, () => p1.type = player_type.AI, '14px Arial', 'p1', settings_menu.button_types.AI);
 
-game.randomize();
 game.start();
 
 // Handle mouse clicks - handle navigation

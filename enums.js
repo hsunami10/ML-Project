@@ -9,6 +9,7 @@ const states = {
   MAIN_MENU: 'main_menu',
   SETTINGS: 'settings',
   GAME_ON: 'game_on',
+  TRAINING: 'training',
   GAME_OVER: 'game_over'
 };
 
