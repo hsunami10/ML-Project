@@ -96,8 +96,8 @@ var mouse_up = function(e) {
 document.addEventListener('mousemove', mouse_move);
 document.addEventListener('mouseup', mouse_up);
 
-var p_input = new Input("human");
-var p_input2 = new Input("human2");
+var p_input = new Input("human", 1, 1, 1);
+var p_input2 = new Input("human2", 1, 1, 1);
 var p1 = new Player(PLAYER_ONE_START_X, PLAYER_START_Y, c, p_input, 50);
 var p2 = new Player(PLAYER_TWO_START_X, PLAYER_START_Y, c, p_input2, 710);
 var game = new Game(p1, p2, 30, c, 1, 0, 4);
@@ -112,6 +112,13 @@ var settings_button = new Button(c, main_menu.BUTTON_X, 300, main_menu.BUTTON_WI
 
 // Settings
 var back_button = new Button(c, settings_menu.back_button.X, settings_menu.back_button.Y, settings_menu.back_button.WIDTH, settings_menu.back_button.HEIGHT, 'Back', states.MAIN_MENU, null, '12px Arial');
+
+
+// Player 1
+var p1_human_type_button = new Button(c, 100, 100, settings_menu.type_button.WIDTH, settings_menu.type_button.HEIGHT, 'Human', null, () => p1.type = player_type.HUMAN, '14px Arial', 'p1', settings_menu.button_types.HUMAN);
+var p1_ai_type_button = new Button(c, 400, 100, settings_menu.type_button.WIDTH, settings_menu.type_button.HEIGHT, 'AI', null, () => p1.type = player_type.AI, '14px Arial', 'p1', settings_menu.button_types.AI);
+
+game.start();
 
 // Player type
 var p1_human_type_button = new Button(c, settings_menu.button_positions.human.P1_X, settings_menu.button_positions.human.Y, settings_menu.type_button.WIDTH, settings_menu.type_button.HEIGHT, 'Human', null, () => p1.type = player_type.HUMAN, '14px Arial', 'p1', settings_menu.button_types.HUMAN);
@@ -153,6 +160,7 @@ var p2_fskip4_button = new Button(c, settings_menu.button_positions.frame_skips.
 var game_length1_button = new Button(c, settings_menu.button_positions.game_length.X1, settings_menu.button_positions.game_length.Y, settings_menu.type_button.WIDTH, settings_menu.type_button.HEIGHT, '15 sec', null, () => game.game_length = 15, '14px Arial', '', settings_menu.button_types.GAME_LEN1);
 var game_length2_button = new Button(c, settings_menu.button_positions.game_length.X2, settings_menu.button_positions.game_length.Y, settings_menu.type_button.WIDTH, settings_menu.type_button.HEIGHT, '30 sec', null, () => game.game_length = 30, '14px Arial', '', settings_menu.button_types.GAME_LEN2);
 var game_length3_button = new Button(c, settings_menu.button_positions.game_length.X3, settings_menu.button_positions.game_length.Y, settings_menu.type_button.WIDTH, settings_menu.type_button.HEIGHT, '45 sec', null, () => game.game_length = 45, '14px Arial', '', settings_menu.button_types.GAME_LEN3);
+
 
 // Handle mouse clicks - handle navigation
 function onMouseDown() {

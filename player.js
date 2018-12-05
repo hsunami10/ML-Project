@@ -79,7 +79,8 @@ class Player {
   }
 
   update(frame_time) {
-    var input_arr = this.input.evaluate();
+    this.input.evaluate();
+    var input_arr = this.input.get();
 
     //HORIZONTAL MOVEMENT
     if (input_arr[PLAYER_INPUT_LEFT]) {

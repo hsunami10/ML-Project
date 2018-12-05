@@ -1,5 +1,8 @@
-SAVE_ADDRESS = "http://run-dez-vous.com/secret/eecs349_project/save"
-LOAD_ADDRESS = "http://run-dez-vous.com/secret/eecs349_project/load"
+SERVER_PATH = "http://run-dez-vous.com/"
+SAVE_ADDRESS_PATH = "secret/eecs349_project/save"
+LOAD_ADDRESS_PATH = "secret/eecs349_project/load"
+CHECK_AVAILABLE = "secret/eecs349_project/check_load"
+
 HIDDEN_UNITS = 32;
 ACTIONS = 32;
 FRAME_SIZE = 32;
@@ -8,7 +11,7 @@ EXPLORATION_RATE = 0.03;
 LEARNING_RATE = 0.05;
 
 class DeepQNetwork {
-        constructor(layers, frames, frame_skip, create_new){
+        constructor(layers, frames, frame_skip){
             this.actions= ACTIONS;
             this.layers = layers;
             this.frames = frames;
@@ -16,7 +19,7 @@ class DeepQNetwork {
             this.name = "Network_" + frames.toString() + "_" + frame_skip.toString() + "_" + layers.toString();
             this.training_time = 0
             this.optimizer = tf.train.sgd(LEARNING_RATE);
-            if(!create_new){
+            if(this.is_loadable()){
                 console.log("retrieving")
             }
             else {
@@ -24,23 +27,25 @@ class DeepQNetwork {
             }
         }
 
+        is_loadable(){
+            return false;
+        }
+
         create_network(){
 
             this.hidden_layers = new Array();
             this.inputs = tf.input({shape: this.frames * FRAME_SIZE});
+            console.log(this.inputs);
             this.hidden_layers.push(this.inputs);
             for (var i = 0; i < this.layers; i++){
-                var new_layer = tf.layers.elu({units: HIDDEN_UNITS}).apply(this.hidden_layers[-1]);
+                var new_layer = tf.layers.elu({units: HIDDEN_UNITS}).apply(this.hidden_layers[i]);
                 this.hidden_layers.push(new_layer);
             }
-            this.q_out = tf.layers.dense({units: ACTIONS}).apply(this.hidden_layers[-1]);
+            this.q_out = tf.layers.dense({units: ACTIONS}).apply(this.hidden_layers[this.layers]);
             this.model = tf.model({
                 inputs: this.inputs,
                 outputs: this.q_out
             });
-
-            
-
 
         }
 
