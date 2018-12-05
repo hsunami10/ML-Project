@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/hsunami10/ML-Project#readme",
   "dependencies": {
+    "@tensorflow/tfjs": "^0.14.0",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "form-data": "^2.3.3",

@@ -1,3 +1,5 @@
+import * as tf from '@tensorflow/tfjs';
+
 SERVER_PATH = "localhost:3001/"
 SAVE_ADDRESS_PATH = "api/eecs349_project/save"
 LOAD_ADDRESS_PATH = "api/eecs349_project/load"
