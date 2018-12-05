@@ -39,7 +39,7 @@ class DeepQNetwork {
 
             this.hidden_layers = new Array();
             this.inputs = tf.input({shape: this.frames * FRAME_SIZE});
-            
+
             this.hidden_layers.push(this.inputs);
             for (var i = 0; i < this.layers; i++){
                 var new_layer = tf.layers.elu({units: HIDDEN_UNITS}).apply(this.hidden_layers[i]);
@@ -56,10 +56,10 @@ class DeepQNetwork {
 
         predict_q(state){
             var q =  this.model.predict(tf.tensor2d(state, [1, this.frames * FRAME_SIZE]));
-            
+
             return q;
         }
-        
+
 
         train_one(e) {
             var q_guess = this.predict_q(e.state);
@@ -78,20 +78,16 @@ class DeepQNetwork {
 
         predict_action(state){
             var action =  this.predict_q(state).argMax(1).dataSync();
-            
+
             return action[0];
         }
 
 
-        save(){
-            var query_params = "?name=" + this.name + "&time=" + this.training_time.toString();
-            console.log(SERVER_PATH + SAVE_ADDRESS_PATH + query_params);
-            this.model.save(SERVER_PATH + SAVE_ADDRESS_PATH + query_params);
+        save() {
+            this.model.save(`${SERVER_PATH + SAVE_ADDRESS_PATH}?name=${this.name}&time=${this.training_time}`);
         }
 
         load(){
             console.log("loading");
         }
 }
-
-
