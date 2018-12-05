@@ -79,7 +79,8 @@ class Player {
   }
 
   update(frame_time) {
-    var input_arr = this.input.evaluate();
+    this.input.evaluate();
+    var input_arr = this.input.get();
 
     //HORIZONTAL MOVEMENT
     if (input_arr[PLAYER_INPUT_LEFT]) {
@@ -102,7 +103,7 @@ class Player {
 
     this.dx = this.dx * PLAYER_FRICTION;
     this.x += this.dx * frame_time;
-
+    
     if (this.x <= game_enum.GAME_LEFT_BOUNDARY) {
       this.x = 0;
       this.dx = 0;

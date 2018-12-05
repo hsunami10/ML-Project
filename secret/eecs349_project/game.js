@@ -1,19 +1,13 @@
 class Game {
-  constructor(p1, p2, game_length, game_canvas, frame_skip, reward_shift, frame_hold) {
+  constructor(p1, p2, game_length, game_canvas) {
     this.p1 = p1;
     this.p2 = p2;
-    this.frame_skip = frame_skip;
-    this.frame_val = 0;
-    this.frame_hold = frame_hold;
+    this.frame_rate = 0;
     this.game_length = game_length;
     this.game_start = game_length;
-    this.game_on = false;
     this.game_canvas = game_canvas;
-    this.frame_rate = 30.0;
     this.game_ended = null;
     this.winner = null;
-    this.p1_buffer = [];
-    this.p2_buffer = [];
     this.game_state = states.MAIN_MENU;
   }
 
@@ -88,9 +82,9 @@ class Game {
 
     return [proj_1x, proj_1y, proj_1v, proj_1s, proj_2x, proj_2y, proj_2v, proj_2s];
   }
-  state(p1, p2){
+  frame_vals(p1, p2){
 
-    var game_state1 = [
+    var game_frame1 = [
       p1.x,
       p1.y,
       p1.dx,
@@ -100,10 +94,10 @@ class Game {
       p1.energy,
       p1.shield_equipped? 1 : 0];
 
-    game_state1 = game_state1.concat(this.get_projectiles(p1));
+    game_frame1 = game_frame1.concat(this.get_projectiles(p1));
 
 
-    var game_state2 = [p2.x,
+    var game_frame2 = [p2.x,
       p2.y,
       p2.dx,
       p2.dy,
@@ -112,10 +106,10 @@ class Game {
       p2.energy,
       p2.shield_equipped? 1: 0];
 
-    game_state2 = game_state2.concat(this.get_projectiles(p2));
-    game_state1 = game_state1.concat(game_state2);
+    game_frame2 = game_frame2.concat(this.get_projectiles(p2));
+    game_frame1 = game_frame1.concat(game_frame2);
 
-    return game_state1;
+    return game_frame1;
 
   }
 
@@ -133,21 +127,31 @@ class Game {
   }
 
   update(frame_time) {
-    this.frame_val++;
-    if (this.frame_val % this.frame_skip == 0){
-      this.p1_buffer.push(this.state(this.p1, this.p2));
-      this.p2_buffer.push(this.state(this.p2, this.p1));
-    }
-    if (this.game_on) {
+    
+    var p1_frame = this.frame_vals(this.p1, this.p2);
+    var p2_frame = this.frame_vals(this.p2, this.p1);
+
+    
+    if (this.game_state == states.GAME_ON) {
       this.detect_collisions();
+      this.p1.input.frame_buffer.add_frame(p1_frame);
+      this.p2.input.frame_buffer.add_frame(p2_frame);
     }
 
-    this.p1.update(frame_time);
-    this.p2.update(frame_time);
+    if (this.game_state == states.GAME_ON || this.game_state == states.GAME_ON){
+      this.p1.update(frame_time);
+      this.p2.update(frame_time);
+    }
+    
+
+    if (this.game_state == states.GAME_ON) {
+      this.p1.input.frame_buffer.add_action(this.p1.input.map_values_to_action());
+      this.p2.input.frame_buffer.add_action(this.p2.input.map_values_to_action());
+    }
 
     var result = this.check_winner();
-    if (result != null && this.game_on){
-      this.game_on = false;
+    if (result != null && this.game_state == states.GAME_ON){
+      this.game_state = states.GAME_OVER;
       this.p1.input.input_type = "dead";
       this.p2.input.input_type = "dead";
       this.game_ended = new Date().getTime();
@@ -165,6 +169,7 @@ class Game {
 
     if (frame_time > 0) {
       this.frame_rate = 0.9 * this.frame_rate + 0.1 / frame_time;
+      
     }
   }
 
@@ -175,7 +180,7 @@ class Game {
 
       player.shield -= projectile.damage;
       if (player.shield < 0) {
-        player.health += player.health
+        player.health += player.shield;
         if (player.health < 0) {
           player.health = 0;
         }
@@ -327,19 +332,25 @@ class Game {
 
         this.draw_time();
 
-        if (this.game_ended != null) {
-          var dt = new Date().getTime();
-          dt = (dt - this.game_ended) / 1000.0;
-
-          var alpha = GAME_OVER_FADE_MAX  / (1 + Math.exp(-GAME_OVER_FADE_RATE*(dt - GAME_OVER_FADE_OFFSET))).toString();
-          this.game_canvas.textAlign = "center";
-          this.game_canvas.font = "45px Arial";
-          this.game_canvas.fillStyle = 'rgba(0,0,0,' + alpha + ')';
-          this.game_canvas.fillText(this.winner + " wins!", game_enum.GAME_WIDTH / 2 , game_enum.GAME_HEIGHT / 3);
-
-        }
+        
         break;
       case states.GAME_OVER:
+        this.p1.draw();
+        this.p2.draw();
+
+        this.draw_time();
+
+        
+        var dt = new Date().getTime();
+        dt = (dt - this.game_ended) / 1000.0;
+
+        var alpha = GAME_OVER_FADE_MAX  / (1 + Math.exp(-GAME_OVER_FADE_RATE*(dt - GAME_OVER_FADE_OFFSET))).toString();
+        this.game_canvas.textAlign = "center";
+        this.game_canvas.font = "45px Arial";
+        this.game_canvas.fillStyle = 'rgba(0,0,0,' + alpha + ')';
+        this.game_canvas.fillText(this.winner + " wins!", game_enum.GAME_WIDTH / 2 , game_enum.GAME_HEIGHT / 3);
+
+        
         break;
       default:
         return;
@@ -347,14 +358,10 @@ class Game {
   }
 
   start(){
-    this.p1_buffer = [];
-    this.p2_buffer = [];
-    for(var i = 0; i < this.frame_hold; i++){
-      this.p1_buffer.push(this.state(this.p1, this.p2));
-      this.p2_buffer.push(this.state(this.p2, this.p1));
-    }
-    this.frame_val = 0;
-    this.game_on = true;
+    
+    this.p1.input.frame_buffer.initialize(this.frame_vals(this.p1, this.p2));
+    this.p2.input.frame_buffer.initialize(this.frame_vals(this.p2, this.p1));
+    this.set_game_state(states.GAME_ON);
     this.game_start = new Date().getTime();
   }
 

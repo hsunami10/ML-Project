@@ -7,5 +7,3 @@ class Experience {
         this.next_state = next_state;
     }
 }
-
-module.exports = Experience;

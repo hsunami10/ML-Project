@@ -9,6 +9,7 @@ const states = {
   MAIN_MENU: 'main_menu',
   SETTINGS: 'settings',
   GAME_ON: 'game_on',
+  TRAINING: 'training',
   GAME_OVER: 'game_over'
 };
 
@@ -34,6 +35,7 @@ const settings_menu = {
   },
   button_types: {
     HUMAN: 'human',
+    HUMAN2: 'human2',
     AI: 'ai',
     FPI1: 'fpi1',
     FPI2: 'fpi2',
@@ -120,5 +122,6 @@ const settings_menu = {
 
 const player_type = {
   HUMAN: settings_menu.button_types.HUMAN,
+  HUMAN2: settings_menu.button_types.HUMAN2,
   AI: settings_menu.button_types.AI
 };
