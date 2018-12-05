@@ -96,8 +96,8 @@ var mouse_up = function(e) {
 document.addEventListener('mousemove', mouse_move);
 document.addEventListener('mouseup', mouse_up);
 
-var p_input = new Input("human");
-var p_input2 = new Input("human2");
+var p_input = new Input("human", 1, 1, 1);
+var p_input2 = new Input("human2", 1, 1, 1);
 var p1 = new Player(PLAYER_ONE_START_X, PLAYER_START_Y, c, p_input, 50);
 var p2 = new Player(PLAYER_TWO_START_X, PLAYER_START_Y, c, p_input2, 710);
 var game = new Game(p1, p2, 10, c, 1, 0, 4);

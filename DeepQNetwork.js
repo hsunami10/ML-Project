@@ -8,7 +8,7 @@ EXPLORATION_RATE = 0.03;
 LEARNING_RATE = 0.05;
 
 class DeepQNetwork {
-        constructor(layers, frames, frame_skip, create_new){
+        constructor(layers, frames, frame_skip){
             this.actions= ACTIONS;
             this.layers = layers;
             this.frames = frames;
@@ -16,12 +16,16 @@ class DeepQNetwork {
             this.name = "Network_" + frames.toString() + "_" + frame_skip.toString() + "_" + layers.toString();
             this.training_time = 0
             this.optimizer = tf.train.sgd(LEARNING_RATE);
-            if(!create_new){
+            if(this.is_loadable()){
                 console.log("retrieving")
             }
             else {
                 this.create_network();
             }
+        }
+
+        is_loadable(){
+            return false;
         }
 
         create_network(){

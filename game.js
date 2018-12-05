@@ -2,9 +2,7 @@ class Game {
   constructor(p1, p2, game_length, game_canvas, frame_skip, reward_shift, frame_hold) {
     this.p1 = p1;
     this.p2 = p2;
-    this.frame_skip = frame_skip;
-    this.frame_val = 0;
-    this.frame_hold = frame_hold;
+    this.p1_input = new Input("human", 1, 1, 1);
     this.game_length = game_length;
     this.game_start = game_length;
     this.game_on = false;
