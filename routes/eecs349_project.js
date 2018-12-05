@@ -21,7 +21,8 @@ module.exports = app => {
     if (fs.existsSync(timePath)) {
       fs.readFile(timePath, (err, data) => {
         if (err) {
-          throw err;
+          console.log(err);
+          res.status(500).send(err);
         }
         res.status(200).send(data);
       });
@@ -50,6 +51,11 @@ module.exports = app => {
   // https://www.npmjs.com/package/multer
   app.post('/api/eecs349_project/save'/*, upload.array()*/, wrapper(async (req, res) => {
     const { name, time } = req.query;
+    console.log(req.query);
+    console.log(req.file);
+    console.log(req.files);
+    console.log(req.body);
+    console.log('\n');
     /*
     Read number from training_times/name.txt
     Check if time is greater than number in training_times/name.txt
@@ -59,25 +65,29 @@ module.exports = app => {
     if (fs.existsSync(path)) { // If file already exists
       fs.readFile(path, (err, data) => {
         if (err) {
-          throw err;
-        }
-        if (parseInt(time, 10) > parseInt(data, 10)) {
+          console.log(err);
+          res.status(500).send(err);
+        } else if (parseInt(time, 10) > parseInt(data, 10)) {
           fs.writeFile(path, time, err => { // Write into file
             if (err) {
-              throw err;
+              console.log(err);
+              res.status(500).send(err);
+            } else {
+              res.status(200).send(true);
             }
-            res.sendStatus(200);
           });
         } else {
-          res.sendStatus(200);
+          res.status(200).send(true);
         }
       })
     } else { // If file doesn't exist
       fs.writeFile(path, time, err => { // Write into file
         if (err) {
-          throw err;
+          console.log(err);
+          res.status(500).send(err);
+        } else {
+          res.status(200).send(true);
         }
-        res.sendStatus(200);
       });
     }
   }));
