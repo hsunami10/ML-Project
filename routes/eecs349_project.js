@@ -49,13 +49,8 @@ module.exports = app => {
 
   // TODO: Finish this later - find out format of req.body to get the names of files
   // https://www.npmjs.com/package/multer
-  app.post('/api/eecs349_project/save'/*, upload.array()*/, wrapper(async (req, res) => {
+  app.post('/api/eecs349_project/save', upload.any(), wrapper(async (req, res) => {
     const { name, time } = req.query;
-    console.log(req.query);
-    console.log(req.file);
-    console.log(req.files);
-    console.log(req.body);
-    console.log('\n');
     /*
     Read number from training_times/name.txt
     Check if time is greater than number in training_times/name.txt
@@ -81,7 +76,7 @@ module.exports = app => {
         }
       })
     } else { // If file doesn't exist
-      fs.writeFile(path, time, err => { // Write into file
+      fs.writeFile(path, time, err => { // Create and write into file
         if (err) {
           console.log(err);
           res.status(500).send(err);

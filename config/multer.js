@@ -2,7 +2,7 @@ const multer = require('multer');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    if (req.originalUrl === '/secret/eecs349_project/save') {
+    if (req.path === '/api/eecs349_project/save') {
       const ext = file.originalname.split('.').pop();
       if (ext === 'json') {
         cb(null, 'secret/eecs349_project/models');
@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
     }
   },
   filename: (req, file, cb) => {
-    if (req.originalUrl === '/secret/eecs349_project/save') {
+    if (req.path === '/api/eecs349_project/save') {
       const { name } = req.query;
       const ext = file.originalname.split('.').pop();
       if (ext === 'json') {
