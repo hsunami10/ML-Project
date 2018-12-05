@@ -23,17 +23,16 @@ class DeepQNetwork {
             this.name = "Network_" + frames.toString() + "_" + frame_skip.toString() + "_" + layers.toString();
             this.training_time = 0
             this.optimizer = tf.train.sgd(LEARNING_RATE);
+            this.is_loading = false;
+            this.create_network();
             if(this.is_loadable()){
                 console.log("retrieving")
+                this.load();
             }
-            else {
-                this.create_network();
-            }
+            
         }
 
-        is_loadable(){
-            return false;
-        }
+        
 
         create_network(){
 
@@ -89,8 +88,38 @@ class DeepQNetwork {
             this.model.save(SERVER_PATH + SAVE_ADDRESS_PATH + query_params);
         }
 
-        load(){
-            console.log("loading");
+        async load(){
+
+            this.is_loading = true;
+
+            //load model.json
+            //IMPLEMENT HERE
+
+
+            //load model.weights.bin
+            //IMPLEMENT HERE
+
+            //make sure this works lol
+            this.model = await tf.load(tf.io.browserFiles([browser_file1, browserfile2]))
+
+            this.loading = false;
+
+            this.get_training_time();
+        }
+
+        is_loadable(){
+
+            //make api request
+            return false;
+        }
+
+        get_training_time(){
+            
+
+            //use this.name in request
+            //should set the training time attribute after making request
+            this.training_time = 0;
+            
         }
 }
 
