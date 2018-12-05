@@ -9,6 +9,7 @@ class Game {
     this.game_ended = null;
     this.winner = null;
     this.game_state = states.MAIN_MENU;
+    this.total_game_time = 0;
   }
 
   set_game_state(state) {
@@ -151,9 +152,9 @@ class Game {
 
     var result = this.check_winner();
     if (result != null && this.game_state == states.GAME_ON){
+      var t = new Date().getTime();
+      this.total_game_time = t - this.game_start;
       this.game_state = states.GAME_OVER;
-      this.p1.input.input_type = "dead";
-      this.p2.input.input_type = "dead";
       this.game_ended = new Date().getTime();
       if (result == this.p1) {
         this.winner = "Player 1";
@@ -164,7 +165,18 @@ class Game {
       else {
         this.winner = "No one"
       }
+      
 
+    }
+
+    if (this.game_state == states.GAME_OVER) {
+      this.train();
+      
+      if (this.p1.input.input_type == player_type.AI && this.p2.input.input_type == player_type.AI){
+  
+        this.reset();
+        this.start();
+      }
     }
 
     if (frame_time > 0) {
@@ -172,6 +184,7 @@ class Game {
       
     }
   }
+
 
 
   handle_collision(player, projectile){
@@ -361,15 +374,47 @@ class Game {
     
     this.p1.input.frame_buffer.initialize(this.frame_vals(this.p1, this.p2));
     this.p2.input.frame_buffer.initialize(this.frame_vals(this.p2, this.p1));
-    this.set_game_state(states.GAME_ON);
+    this.game_state = states.GAME_ON;
     this.game_start = new Date().getTime();
   }
 
 
   reset(){
-    this.game_on = false;
-    this.game_start = game_length;
+    
+    this.game_start = this.game_length;
     this.p1 = new Player(PLAYER_ONE_START_X, PLAYER_START_Y, this.game_canvas, this.p1.input, 50);
     this.p2 = new Player(PLAYER_TWO_START_X, PLAYER_START_Y, this.game_canvas, this.p2.input, 710);
+    this.p1.input.reset_buffer();
+    this.p2.input.reset_buffer();
+  }
+
+  train(){
+    var p1_experiences = this.p1.input.frame_buffer.get_experiences();
+    var p2_experiences = this.p2.input.frame_buffer.get_experiences();
+
+    for (var i = 0; i < p1_experiences.length; i++){
+      this.p1.input.network.train_one(p1_experiences[i]);
+    }
+
+    this.p1.input.network.training_time += this.total_game_time;
+
+    this.p1.input.network.save();
+
+    if (this.p1.input.network.frames == this.p2.input.network.frames) {
+      if (this.p1.input.network.layers == this.p2.input.network.layers){
+        if (this.p1.input.network.frame_skip == this.p2.input.network.frame_skip){
+          this.p2.input.network = this.p1.input.network;
+        }
+      }
+    }
+
+    for (var i = 0; i < p2_experiences.length; i++){
+      this.p2.input.network.train_one(p2_experiences[i]);
+    }
+
+    this.p2.input.network.training_time += this.total_game_time;
+
+    this.p2.input.network.save();
+
   }
 }

@@ -56,21 +56,18 @@ class DeepQNetwork {
             return q;
         }
         
-        loss(q_guess, q_actual){
-            return q_guess.sub(q_actual).square().mean();
-            
-        }
 
-        train_one(state, action, reward, state2) {
-            var q_guess = this.predict_q(state);
-            var actual_q = q_guess.values();
-            var maxQPrime = tf.max(this.predict_q(state2));
-            var new_reward = reward + DISCOUNT_RATE * maxQPrime;
-            actual_q[action] = new_reward;
+        train_one(e) {
+            var q_guess = this.predict_q(e.state);
+            var actual_q = q_guess.dataSync();
+            var maxQPrime = tf.max(this.predict_q(e.state2));
+            var new_reward = e.reward + DISCOUNT_RATE * maxQPrime;
+            actual_q[e.action] = new_reward;
             var q_actual = tf.tensor1d(actual_q);
 
             this.optimizer.minimize(() => {
-                return this.loss(q_guess, q_actual);
+                const p = this.predict_q(e.state);
+                return p.sub(q_actual).square().mean();
             })
 
         }
@@ -84,7 +81,8 @@ class DeepQNetwork {
 
         save(){
             var query_params = "?name=" + this.name + "&time=" + this.training_time.toString();
-            this.model.save(SERVER_PATH + SAVE_ADDRESS_PATH + query_params);
+            console.log(this.training_time);
+            //this.model.save(SERVER_PATH + SAVE_ADDRESS_PATH + query_params);
         }
 
         load(){

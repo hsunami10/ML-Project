@@ -36,4 +36,36 @@ class FrameBuffer {
         }
         return state;
     }
+
+    get_state(){
+        var state = new Array();
+        for (var i = this.frames.length - this.num_frames; i < this.frames.length; i++){
+            state = state.concat(this.frames[i]);
+        }
+        return state;
+    }
+
+    get_state_at(loc){
+        var state = new Array();
+        for (var i = loc; i < loc + this.num_frames; i++){
+            state = state.concat(this.frames[i]);
+        }
+        return state;
+
+    }
+
+    get_experiences(){
+        var experiences = new Array();
+        for (var i = 0; i < this.actions.length - 1; i++)
+        {
+            var state = this.get_state_at(i);
+            var state2 = this.get_state_at(i + 1);
+            var state_len = state2.length;
+            var action = this.actions[i];
+            var reward = state[state_len - 12] + state2[state_len - 28] - state[state_len - 28] - state2[state_len - 12]
+            experiences.push(new Experience(state, action, reward, state2));
+        }
+
+        return experiences;
+    }
 }
