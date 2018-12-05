@@ -1,7 +1,8 @@
-SERVER_PATH = "http://run-dez-vous.com/"
-SAVE_ADDRESS_PATH = "secret/eecs349_project/save"
-LOAD_ADDRESS_PATH = "secret/eecs349_project/load"
-CHECK_LOAD = "secret/eecs349_project/check_load"
+SERVER_PATH = "localhost:3001/"
+SAVE_ADDRESS_PATH = "api/eecs349_project/save"
+LOAD_ADDRESS_PATH = "api/eecs349_project/load"
+CHECK_LOAD = "api/eecs349_project/check_load"
+CHECK_TRAIN_TIME = "api/eecs349_project/get_time"
 
 HIDDEN_UNITS = 32;
 ACTIONS = 32;
@@ -82,7 +83,7 @@ class DeepQNetwork {
         save(){
             var query_params = "?name=" + this.name + "&time=" + this.training_time.toString();
             console.log(this.training_time);
-            //this.model.save(SERVER_PATH + SAVE_ADDRESS_PATH + query_params);
+            this.model.save(SERVER_PATH + SAVE_ADDRESS_PATH + query_params);
         }
 
         load(){
