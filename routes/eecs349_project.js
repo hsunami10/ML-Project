@@ -27,24 +27,31 @@ module.exports = app => {
         res.status(200).send(data);
       });
     } else {
-      throw new Error('Time file does not exist');
+      throw new Error('Specified time file does not exist');
     }
   }));
 
   app.get('/api/eecs349_project/check_load', wrapper(async (req, res) => {
     const { name } = req.query;
-    const modelPath = `secret/eecs349_project/models/${name}.model`;
-    if (fs.existsSync(modelPath)) {
+    const modelPath = `secret/eecs349_project/models/${name}.json`;
+    const weightPath = `secret/eecs349_project/model_weights/${name}.weights.bin`;
+    if (fs.existsSync(modelPath) && fs.existsSync(weightPath)) {
       res.status(200).send(true);
     } else {
       res.status(200).send(false);
     }
   }));
 
-  app.get('/api/eecs349_project/load', wrapper(async (req, res) => {
+  app.get('/api/eecs349_project/load_model', wrapper(async (req, res) => {
     const { name } = req.query;
-    const modelPath = `${__dirname}/../secret/eecs349_project/models/${name}.model`;
+    const modelPath = `${__dirname}/../secret/eecs349_project/models/${name}.json`;
     res.status(200).sendFile(path.resolve(modelPath));
+  }));
+
+  app.get('/api/eecs349_project/load_weights', wrapper(async (req, res) => {
+    const { name } = req.query;
+    const weightsPath = `${__dirname}/../secret/eecs349_project/model_weights/${name}.weights.bin`;
+    res.status(200).sendFile(path.resolve(weightsPath));
   }));
 
   // TODO: Finish this later - find out format of req.body to get the names of files
