@@ -128,11 +128,11 @@ class Game {
   }
 
   update(frame_time) {
-    
+
     var p1_frame = this.frame_vals(this.p1, this.p2);
     var p2_frame = this.frame_vals(this.p2, this.p1);
 
-    
+
     if (this.game_state == states.GAME_ON) {
       this.detect_collisions();
       this.p1.input.frame_buffer.add_frame(p1_frame);
@@ -143,7 +143,7 @@ class Game {
       this.p1.update(frame_time);
       this.p2.update(frame_time);
     }
-    
+
 
     if (this.game_state == states.GAME_ON) {
       this.p1.input.frame_buffer.add_action(this.p1.input.map_values_to_action());
@@ -165,23 +165,25 @@ class Game {
       else {
         this.winner = "No one"
       }
-      
+
 
     }
 
     if (this.game_state == states.GAME_OVER) {
       this.train();
-      
+
       if (this.p1.input.input_type == player_type.AI && this.p2.input.input_type == player_type.AI){
-  
         this.reset();
         this.start();
+      } else {
+        this.set_game_state(states.MAIN_MENU);
+        this.reset();
       }
     }
 
     if (frame_time > 0) {
       this.frame_rate = 0.9 * this.frame_rate + 0.1 / frame_time;
-      
+
     }
   }
 
@@ -345,7 +347,7 @@ class Game {
 
         this.draw_time();
 
-        
+
         break;
       case states.GAME_OVER:
         this.p1.draw();
@@ -353,7 +355,7 @@ class Game {
 
         this.draw_time();
 
-        
+
         var dt = new Date().getTime();
         dt = (dt - this.game_ended) / 1000.0;
 
@@ -363,7 +365,7 @@ class Game {
         this.game_canvas.fillStyle = 'rgba(0,0,0,' + alpha + ')';
         this.game_canvas.fillText(this.winner + " wins!", game_enum.GAME_WIDTH / 2 , game_enum.GAME_HEIGHT / 3);
 
-        
+
         break;
       default:
         return;
@@ -371,7 +373,6 @@ class Game {
   }
 
   start(){
-    
     this.p1.input.frame_buffer.initialize(this.frame_vals(this.p1, this.p2));
     this.p2.input.frame_buffer.initialize(this.frame_vals(this.p2, this.p1));
     this.game_state = states.GAME_ON;
@@ -380,7 +381,6 @@ class Game {
 
 
   reset(){
-    
     this.game_start = this.game_length;
     this.p1 = new Player(PLAYER_ONE_START_X, PLAYER_START_Y, this.game_canvas, this.p1.input, 50);
     this.p2 = new Player(PLAYER_TWO_START_X, PLAYER_START_Y, this.game_canvas, this.p2.input, 710);
@@ -416,5 +416,7 @@ class Game {
 
     this.p2.input.network.save();
 
+    this.p1.input.network.load();
+    this.p2.input.network.load();
   }
 }

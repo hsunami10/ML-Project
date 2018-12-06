@@ -28,17 +28,17 @@ class DeepQNetwork {
       .then(response => {
         if (response.data) {
           this.load();
-          this.create_network();
         }
       })
       .catch(error => {
         console.error(error);
+        console.trace(error);
         alert(error);
+        throw error;
       })
   }
 
   create_network() {
-
     this.hidden_layers = new Array();
     this.inputs = tf.input({
       shape: this.frames * FRAME_SIZE
@@ -84,9 +84,13 @@ class DeepQNetwork {
   }
 
   predict_action(state) {
-    var action = this.predict_q(state).argMax(1).dataSync();
-
-    return action[0];
+    var action = this.predict_q(state).argMax(1).dataSync()
+    if (Math.random() < EXPLORATION_RATE) {
+      action = Math.floor(Math.random() * 32)
+    }
+    return action;
+    // var action = this.predict_q(state).argMax(1).dataSync();
+    // return action[0];
   }
 
 
@@ -111,7 +115,6 @@ class DeepQNetwork {
   // NOTE: Old and new models have the same weights?
   load() {
     this.is_loading = true;
-    console.log('initial model: ', this.model);
     axios.all([this.getModel(), this.getWeights()])
       .then(axios.spread((modelResponse, weightsResponse) => {
         this.is_loading = false;
@@ -121,17 +124,20 @@ class DeepQNetwork {
         ]))
           .then(model => {
             this.model = model;
-            console.log('new model: ', this.model);
             this.get_training_time();
           })
           .catch(error => {
             console.error(error);
+            console.trace(error);
             alert(error);
+            throw error;
           });
       }))
       .catch(error => {
         console.error(error);
+        console.trace(error);
         alert(error);
+        throw error;
       });
   }
 
@@ -146,7 +152,9 @@ class DeepQNetwork {
       })
       .catch(error => {
         console.error(error);
+        console.trace(error);
         alert(error);
+        throw error;
       });
   }
 }
