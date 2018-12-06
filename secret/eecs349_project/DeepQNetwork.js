@@ -36,6 +36,7 @@ class DeepQNetwork {
         alert(error);
         throw error;
       })
+      
   }
 
   create_network() {
@@ -117,28 +118,32 @@ class DeepQNetwork {
     this.is_loading = true;
     axios.all([this.getModel(), this.getWeights()])
       .then(axios.spread((modelResponse, weightsResponse) => {
-        this.is_loading = false;
+        
         tf.loadModel(tf.io.browserFiles([
           this.blobToFile(modelResponse.data, `model.json`),
           this.blobToFile(weightsResponse.data, `model.weights.bin`)
         ]))
           .then(model => {
+            
             this.model = model;
             this.get_training_time();
+            
           })
           .catch(error => {
             console.error(error);
             console.trace(error);
-            alert(error);
+            //alert(error);
             throw error;
           });
       }))
       .catch(error => {
         console.error(error);
         console.trace(error);
-        alert(error);
+        //alert(error);
         throw error;
       });
+
+    this.is_loading = false;
   }
 
   is_loadable() {
@@ -156,5 +161,24 @@ class DeepQNetwork {
         alert(error);
         throw error;
       });
+  }
+
+  training_time_string() {
+    if (this.is_loading){
+      return "Loading..."
+    }
+    var seconds = Math.floor(this.training_time / 1000);
+    var minutes = Math.floor(seconds / 60)
+    seconds = seconds % 60;
+    var hours = Math.floor(minutes / 60);
+    minutes = minutes % 60;
+    var days = Math.floor(hours / 24);
+    hours = hours % 24;
+
+    return days.toString() + "d " + hours.toString() + "h " + minutes.toString() + "m " + seconds.toString() + "s";
+  }
+
+  toString(){
+    return this.name + ": " + this.training_time_string();
   }
 }

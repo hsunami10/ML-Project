@@ -129,26 +129,27 @@ class Game {
 
   update(frame_time) {
 
-    var p1_frame = this.frame_vals(this.p1, this.p2);
-    var p2_frame = this.frame_vals(this.p2, this.p1);
 
-
-    if (this.game_state == states.GAME_ON) {
+    if (this.game_state == states.GAME_ON){
       this.detect_collisions();
+      var p1_frame = this.frame_vals(this.p1, this.p2);
+      var p2_frame = this.frame_vals(this.p2, this.p1);
+      if (p1_frame.length < 32){
+        console.alert("error: frame is too short");
+      }
+      if (p2_frame.length < 32){
+        console.alert("error: frame is too short");
+      }
       this.p1.input.frame_buffer.add_frame(p1_frame);
       this.p2.input.frame_buffer.add_frame(p2_frame);
-    }
-
-    if (this.game_state == states.GAME_ON || this.game_state == states.GAME_ON){
       this.p1.update(frame_time);
       this.p2.update(frame_time);
-    }
-
-
-    if (this.game_state == states.GAME_ON) {
       this.p1.input.frame_buffer.add_action(this.p1.input.map_values_to_action());
       this.p2.input.frame_buffer.add_action(this.p2.input.map_values_to_action());
+
     }
+    
+
 
     var result = this.check_winner();
     if (result != null && this.game_state == states.GAME_ON){
@@ -174,10 +175,17 @@ class Game {
 
       if (this.p1.input.input_type == player_type.AI && this.p2.input.input_type == player_type.AI){
         this.reset();
+        
         this.start();
+        
+        
       } else {
-        this.set_game_state(states.MAIN_MENU);
         this.reset();
+        
+        this.set_game_state(states.MAIN_MENU);
+        
+        
+        
       }
     }
 
@@ -283,6 +291,10 @@ class Game {
     this.game_canvas.font = "10px Arial";
     this.game_canvas.fillStyle = 'rgb(255,255,255)';
     this.game_canvas.fillText("FPS: " + Math.floor(this.frame_rate).toString(), 950, 20);
+    this.game_canvas.fillStyle = 'rgb(255,255,255)';
+    this.game_canvas.font = "12px Arial";
+    this.game_canvas.fillText(this.p1.input.network.toString(), 345, 20);
+    this.game_canvas.fillText(this.p2.input.network.toString(), 610, 20);
 
     switch (this.game_state) {
       case states.MAIN_MENU:
@@ -386,6 +398,8 @@ class Game {
     this.p2 = new Player(PLAYER_TWO_START_X, PLAYER_START_Y, this.game_canvas, this.p2.input, 710);
     this.p1.input.reset_buffer();
     this.p2.input.reset_buffer();
+    this.p1.input.network.load();
+    this.p2.input.network.load();
   }
 
   train(){
@@ -415,8 +429,7 @@ class Game {
     this.p2.input.network.training_time += this.total_game_time;
 
     this.p2.input.network.save();
-
-    this.p1.input.network.load();
-    this.p2.input.network.load();
+    
+    
   }
 }
