@@ -28,6 +28,7 @@ class DeepQNetwork {
       .then(response => {
         if (response.data) {
           this.load();
+          this.create_network();
         }
       })
       .catch(error => {
@@ -63,7 +64,6 @@ class DeepQNetwork {
 
   predict_q(state) {
     var q = this.model.predict(tf.tensor2d(state, [1, this.frames * FRAME_SIZE]));
-
     return q;
   }
 
@@ -95,21 +95,38 @@ class DeepQNetwork {
   }
 
   getModel() {
-    return axios.get(`${SERVER_PATH + LOAD_MODEL_PATH}?name=${this.name}`);
+    return axios.get(`${SERVER_PATH + LOAD_MODEL_PATH}?name=${this.name}`, { responseType: 'blob' });
   }
   getWeights() {
-    return axios.get(`${SERVER_PATH + LOAD_WEIGHTS_PATH}?name=${this.name}`);
+    return axios.get(`${SERVER_PATH + LOAD_WEIGHTS_PATH}?name=${this.name}`, { responseType: 'blob' });
   }
 
+  // Convert Blob to File object
+  blobToFile(theBlob, fileName) {
+    theBlob.lastModifiedDate = new Date();
+    theBlob.name = fileName;
+    return theBlob;
+  }
+
+  // NOTE: Old and new models have the same weights?
   load() {
     this.is_loading = true;
+    console.log('initial model: ', this.model);
     axios.all([this.getModel(), this.getWeights()])
       .then(axios.spread((modelResponse, weightsResponse) => {
         this.is_loading = false;
-        tf.loadModel(tf.io.browserFiles([modelResponse.data, weightsResponse.data]))
+        tf.loadModel(tf.io.browserFiles([
+          this.blobToFile(modelResponse.data, `model.json`),
+          this.blobToFile(weightsResponse.data, `model.weights.bin`)
+        ]))
           .then(model => {
             this.model = model;
+            console.log('new model: ', this.model);
             this.get_training_time();
+          })
+          .catch(error => {
+            console.error(error);
+            alert(error);
           });
       }))
       .catch(error => {
