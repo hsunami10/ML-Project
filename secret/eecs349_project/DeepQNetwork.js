@@ -1,4 +1,4 @@
-SERVER_PATH = "ec2-52-55-151-131.compute-1.amazonaws.com/"
+SERVER_PATH = "http://ec2-52-55-151-131.compute-1.amazonaws.com/"
 SAVE_ADDRESS_PATH = "api/eecs349_project/save"
 LOAD_MODEL_PATH = "api/eecs349_project/load_model"
 LOAD_WEIGHTS_PATH = "api/eecs349_project/load_weights"
