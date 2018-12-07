@@ -398,8 +398,9 @@ class Game {
     this.p2 = new Player(PLAYER_TWO_START_X, PLAYER_START_Y, this.game_canvas, this.p2.input, 710);
     this.p1.input.reset_buffer();
     this.p2.input.reset_buffer();
-    this.p1.input.network.load();
-    this.p2.input.network.load();
+
+    this.p1.input.network = new DeepQNetwork(Math.floor(Math.random() * 3) + 1, Math.floor(Math.random() * 4) + 1, Math.floor(Math.random() * 4) + 1);
+    this.p2.input.network = new DeepQNetwork(Math.floor(Math.random() * 3) + 1, Math.floor(Math.random() * 4) + 1, Math.floor(Math.random() * 4) + 1);
   }
 
   train(){
