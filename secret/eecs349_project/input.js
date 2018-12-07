@@ -12,7 +12,7 @@ class Input {
   }
 
   reset_buffer(){
-    this.frame_buffer = new FrameBuffer(this.frame_buffer.num_frames, this.frame_buffer.frame_skip);
+    this.frame_buffer = new FrameBuffer(this.network.frames, this.network.frame_skip);
   }
 
   update_input_type(type){
