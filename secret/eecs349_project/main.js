@@ -79,15 +79,20 @@ var keys = {};
 var keylistener = function(e) {
   e = e || event;
   keys[e.code] = e.type == 'keydown';
+  switch(e.keyCode){
+    case 37: case 39: case 38:  case 40: // Arrow keys
+    case 32: e.preventDefault(); break; // Space
+    default: break; // do not block other keys
+  }
 }
 document.addEventListener('keydown', keylistener);
 document.addEventListener('keyup', keylistener);
-
+var rect = document.getElementById('canvas').getBoundingClientRect();
 // Add mouse listeners
 var mouse_position = { x: 0, y: 0 };
 var mouse_move = function(e) {
-  mouse_position.x = e.clientX;
-  mouse_position.y = e.clientY;
+  mouse_position.x = e.clientX - rect.left;
+  mouse_position.y = e.clientY - rect.top;
 }
 var mouse_up = function(e) {
   mouse_move(e);
