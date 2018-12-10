@@ -20,7 +20,7 @@ class DeepQNetwork {
     this.frame_skip = frame_skip;
     this.name = "Network_" + frames.toString() + "_" + frame_skip.toString() + "_" + layers.toString();
     this.training_time = 0
-    this.optimizer = tf.train.sgd(LEARNING_RATE);
+    this.optimizer = tf.train.adam(LEARNING_RATE);
     this.is_loading = false;
     this.create_network();
 
@@ -28,6 +28,7 @@ class DeepQNetwork {
       .then(response => {
         if (response.data) {
           this.load();
+          
         }
       })
       .catch(error => {
@@ -36,6 +37,8 @@ class DeepQNetwork {
         alert(error);
         throw error;
       })
+
+    
       
   }
 
@@ -64,7 +67,9 @@ class DeepQNetwork {
 
 
   predict_q(state) {
+    
     var q = this.model.predict(tf.tensor2d(state, [1, this.frames * FRAME_SIZE]));
+    
     return q;
   }
 
@@ -85,7 +90,10 @@ class DeepQNetwork {
   }
 
   predict_action(state) {
+    var p = this.predict_q(state);
+    
     var action = this.predict_q(state).argMax(1).dataSync()
+    
     if (Math.random() < EXPLORATION_RATE) {
       action = Math.floor(Math.random() * 32)
     }
@@ -147,6 +155,7 @@ class DeepQNetwork {
   }
 
   is_loadable() {
+    
     return axios.get(`${SERVER_PATH + CHECK_LOAD}?name=${this.name}`);
   }
 
