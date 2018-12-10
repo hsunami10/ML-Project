@@ -29,18 +29,18 @@ var PLAYER_INPUT_JUMP = 2;
 var PLAYER_INPUT_SHOOT = 3;
 var PLAYER_INPUT_SHIELD = 4;
 
-var HUMAN_KEY_LEFT = "ArrowLeft";
-var HUMAN_KEY_RIGHT = "ArrowRight";
-var HUMAN_KEY_JUMP = "ArrowUp";
-var HUMAN_KEY_SHOOT = "Space";
-var HUMAN_KEY_SHIELD = "ArrowDown"
+var HUMAN_KEY_LEFT = "KeyA";
+var HUMAN_KEY_RIGHT = "KeyD";
+var HUMAN_KEY_JUMP = "KeyW";
+var HUMAN_KEY_SHOOT = "KeyC";
+var HUMAN_KEY_SHIELD = "KeyS"
 
 
-var HUMAN_KEY_LEFT2 = "KeyA";
-var HUMAN_KEY_RIGHT2 = "KeyD";
-var HUMAN_KEY_JUMP2 = "KeyW";
-var HUMAN_KEY_SHOOT2 = "KeyC";
-var HUMAN_KEY_SHIELD2 = "KeyS"
+var HUMAN_KEY_LEFT2 = "KeyJ";
+var HUMAN_KEY_RIGHT2 = "KeyL";
+var HUMAN_KEY_JUMP2 = "KeyI";
+var HUMAN_KEY_SHOOT2 = "KeyN";
+var HUMAN_KEY_SHIELD2 = "KeyK"
 
 //projectile should be circle I guess?
 var PROJECTILE_SPEED = 8; //pixels per second
