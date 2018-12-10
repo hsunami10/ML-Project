@@ -8,9 +8,9 @@ CHECK_TRAIN_TIME = "api/eecs349_project/get_time"
 HIDDEN_UNITS = 32;
 ACTIONS = 32;
 FRAME_SIZE = 32;
-DISCOUNT_RATE = 0.9;
-EXPLORATION_RATE = 0.005;
-LEARNING_RATE = 0.005;
+DISCOUNT_RATE = 0.95;
+EXPLORATION_RATE = 0.015;
+LEARNING_RATE = 0.0005;
 
 class DeepQNetwork {
   constructor(layers, frames, frame_skip) {

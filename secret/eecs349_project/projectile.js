@@ -1,5 +1,5 @@
 class Projectile {
-  constructor(color, size, damage, x, y, direction, game_frame) {
+  constructor(color, size, damage, x, y, direction, game_frame, frame_val) {
     this.color = color;
     this.size = size;
     this.direction = direction;
@@ -8,6 +8,7 @@ class Projectile {
     this.x = x;
     this.y = y;
     this.visible = true;
+    this.frame_val = frame_val;
 
   }
 

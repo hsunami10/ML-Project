@@ -153,8 +153,7 @@ class Game {
       this.p2.input.frame_buffer.add_frame(p2_frame);
       this.p1.update(frame_time);
       this.p2.update(frame_time);
-      this.p1.input.frame_buffer.add_action(this.p1.input.map_values_to_action());
-      this.p2.input.frame_buffer.add_action(this.p2.input.map_values_to_action());
+      
 
     }
     
@@ -230,13 +229,15 @@ class Game {
   detect_collisions() {
     for (var i in this.p1.projectiles) {
       if (this.is_colliding(this.p2, this.p1.projectiles[i])) {
-          this.handle_collision(this.p2, this.p1.projectiles[i]);
+        this.p1.input.frame_buffer.add_reward(this.p1.projectiles[i].size / PLAYER_HP, this.p1.projectiles[i].frame_val)
+        this.handle_collision(this.p2, this.p1.projectiles[i]);
       }
     }
 
     for (var i in this.p2.projectiles) {
       if (this.is_colliding(this.p1, this.p2.projectiles[i])) {
-          this.handle_collision(this.p1, this.p2.projectiles[i]);
+        this.p2.input.frame_buffer.add_reward(this.p2.projectiles[i].size / PLAYER_HP, this.p2.projectiles[i].frame_val)
+        this.handle_collision(this.p1, this.p2.projectiles[i]);
       }
     }
   }

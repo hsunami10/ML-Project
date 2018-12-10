@@ -2,6 +2,7 @@ class FrameBuffer {
     constructor(num_frames, frame_skip){
         this.frames = new Array();
         this.actions = new Array();
+        this.rewards = new Array();
         this.num_frames = num_frames;
         this.frame_skip = frame_skip;
         this.frame_count = 0;
@@ -25,18 +26,17 @@ class FrameBuffer {
     add_action(action){
         if (this.frame_count % this.frame_skip == 0){
             this.actions.push(action);
+            this.rewards.push(0);
         }
         
     }
 
-    get_state(){
-        var state = new Array();
-        for (var i = this.frames.length - this.num_frames; i < this.frames.length; i++){
-            state = state.concat(this.frames[i]);
-        }
-        return state;
+    add_reward(reward, frame_at){
+        this.rewards[frame_at] = reward;
+
     }
 
+   
     get_state(){
         var state = new Array();
         for (var i = this.frames.length - this.num_frames; i < this.frames.length; i++){
@@ -62,7 +62,7 @@ class FrameBuffer {
             var state2 = this.get_state_at(i + 1);
             var state_len = state2.length;
             var action = this.actions[i];
-            var reward = state[state_len - 12] + state2[state_len - 28] - state[state_len - 28] - state2[state_len - 12]
+            var reward = state2[state_len - 28] - state[state_len - 28] + this.rewards[i];
             
             experiences.push(new Experience(state, action, reward, state2));
         }

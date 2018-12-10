@@ -81,7 +81,8 @@ class Player {
   update(frame_time) {
     this.input.evaluate();
     var input_arr = this.input.get();
-
+    this.input.frame_buffer.add_action(this.input.map_values_to_action());
+    
     //HORIZONTAL MOVEMENT
     if (input_arr[PLAYER_INPUT_LEFT]) {
       this.dx -= PLAYER_HORIZ_ACCEL * frame_time;
@@ -142,17 +143,17 @@ class Player {
 
     if (input_arr[PLAYER_INPUT_SHOOT]){
       if (this.energy >= PROJECTILE_REQ_LARGE){
-        var p = new Projectile(this.color, PROJECTILE_SIZE_LARGE, PROJECTILE_DMG_LARGE, this.x + this.width / 2.0, this.y + this.height / 2.0, this.player_direction, this.game_frame)
+        var p = new Projectile(this.color, PROJECTILE_SIZE_LARGE, PROJECTILE_DMG_LARGE, this.x + this.width / 2.0, this.y + this.height / 2.0, this.player_direction, this.game_frame, Math.floor(this.input.frame_buffer.frame_count / this.input.frame_buffer.frame_skip))
         this.projectiles.push(p);
         this.energy -= PROJECTILE_REQ_LARGE;
       }
       else if (this.energy >= PROJECTILE_REQ_MEDIUM) {
-        var p = new Projectile(this.color, PROJECTILE_SIZE_MEDIUM, PROJECTILE_DMG_MEDIUM, this.x + this.width / 2.0, this.y + this.height / 2.0, this.player_direction, this.game_frame)
+        var p = new Projectile(this.color, PROJECTILE_SIZE_MEDIUM, PROJECTILE_DMG_MEDIUM, this.x + this.width / 2.0, this.y + this.height / 2.0, this.player_direction, this.game_frame, Math.floor(this.input.frame_buffer.frame_count / this.input.frame_buffer.frame_skip))
         this.projectiles.push(p);
         this.energy -= PROJECTILE_REQ_MEDIUM;
       }
       else if (this.energy >= PROJECTILE_REQ_SMALL) {
-        var p = new Projectile(this.color, PROJECTILE_SIZE_SMALL, PROJECTILE_DMG_SMALL, this.x + this.width / 2.0, this.y + this.height / 2.0, this.player_direction, this.game_frame)
+        var p = new Projectile(this.color, PROJECTILE_SIZE_SMALL, PROJECTILE_DMG_SMALL, this.x + this.width / 2.0, this.y + this.height / 2.0, this.player_direction, this.game_frame, Math.floor(this.input.frame_buffer.frame_count / this.input.frame_buffer.frame_skip))
 
         this.projectiles.push(p);
         this.energy -= PROJECTILE_REQ_SMALL;
