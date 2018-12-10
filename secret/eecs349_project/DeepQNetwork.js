@@ -1,4 +1,4 @@
-SERVER_PATH = "http://ec2-52-55-151-131.compute-1.amazonaws.com/"
+SERVER_PATH = "http://run-dez-vous.com/"
 SAVE_ADDRESS_PATH = "api/eecs349_project/save"
 LOAD_MODEL_PATH = "api/eecs349_project/load_model"
 LOAD_WEIGHTS_PATH = "api/eecs349_project/load_weights"
@@ -8,8 +8,8 @@ CHECK_TRAIN_TIME = "api/eecs349_project/get_time"
 HIDDEN_UNITS = 32;
 ACTIONS = 32;
 FRAME_SIZE = 32;
-DISCOUNT_RATE = 0.95;
-EXPLORATION_RATE = 0.002;
+DISCOUNT_RATE = 0.9;
+EXPLORATION_RATE = 0.005;
 LEARNING_RATE = 0.05;
 
 class DeepQNetwork {
@@ -28,6 +28,7 @@ class DeepQNetwork {
       .then(response => {
         if (response.data) {
           this.load();
+          
           
         }
       })
@@ -51,16 +52,18 @@ class DeepQNetwork {
     this.hidden_layers.push(this.inputs);
     for (var i = 0; i < this.layers; i++) {
       var new_layer = tf.layers.elu({
-        units: HIDDEN_UNITS
+        units: HIDDEN_UNITS,
       }).apply(this.hidden_layers[i]);
       this.hidden_layers.push(new_layer);
     }
     this.q_out = tf.layers.dense({
-      units: ACTIONS
+      units: ACTIONS,
+      
     }).apply(this.hidden_layers[this.layers]);
     this.model = tf.model({
       inputs: this.inputs,
       outputs: this.q_out
+      
     });
 
   }
@@ -75,21 +78,40 @@ class DeepQNetwork {
 
 
   train_one(e) {
+    
     var q_guess = this.predict_q(e.state);
-    var actual_q = q_guess.dataSync();
-    var maxQPrime = tf.max(this.predict_q(e.state2));
-    var new_reward = e.reward + DISCOUNT_RATE * maxQPrime;
+    
+    
+    var actual_q = q_guess.clone().dataSync();
+    
+    var q_prime = this.predict_q(e.state2);
+    
+    var q_prime_data = q_prime.dataSync();
+    
+    var maxQPrime = Math.max.apply(null, q_prime_data);
+    
+    var new_reward = 10* e.reward + DISCOUNT_RATE * maxQPrime;
+    
+    
     actual_q[e.action] = new_reward;
+    
     var q_actual = tf.tensor1d(actual_q);
+    
+    
 
     this.optimizer.minimize(() => {
       const p = this.predict_q(e.state);
-      return p.sub(q_actual).square().mean();
+      
+      var loss = p.sub(q_actual).square().mean();
+      
+      
+      return loss;
     })
 
   }
 
   predict_action(state) {
+    
     var p = this.predict_q(state);
     
     var action = this.predict_q(state).argMax(1).dataSync()

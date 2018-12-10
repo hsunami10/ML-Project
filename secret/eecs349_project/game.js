@@ -81,30 +81,39 @@ class Game {
     }
 
 
-    return [proj_1x, proj_1y, proj_1v, proj_1s, proj_2x, proj_2y, proj_2v, proj_2s];
+    return [
+      proj_1x / game_enum.GAME_WIDTH, 
+      proj_1y / game_enum.GAME_HEIGHT, 
+      proj_1v / PROJECTILE_SPEED, 
+      proj_1s / PLAYER_HP, 
+      proj_2x / game_enum.GAME_WIDTH, 
+      proj_2y / game_enum.GAME_HEIGHT, 
+      proj_2v / PROJECTILE_SPEED, 
+      proj_2s / PLAYER_HP];
   }
   frame_vals(p1, p2){
 
     var game_frame1 = [
-      p1.x,
-      p1.y,
-      p1.dx,
-      p1.dy,
-      p1.health,
-      p1.shield,
-      p1.energy,
+      p1.x / game_enum.GAME_WIDTH,
+      p1.y  / game_enum.GAME_HEIGHT,
+      p1.dx / MAX_PLAYER_SPEED,
+      p1.dy / PLAYER_JUMP_SPEED,
+      p1.health / PLAYER_HP,
+      p1.shield / PLAYER_MAX_SHIELD,
+      p1.energy / PLAYER_MAX_ENERGY,
       p1.shield_equipped? 1 : 0];
 
     game_frame1 = game_frame1.concat(this.get_projectiles(p1));
 
 
-    var game_frame2 = [p2.x,
-      p2.y,
-      p2.dx,
-      p2.dy,
-      p2.health,
-      p2.shield,
-      p2.energy,
+    var game_frame2 = [
+      p2.x / game_enum.GAME_WIDTH,
+      p2.y /game_enum.GAME_HEIGHT,
+      p2.dx / MAX_PLAYER_SPEED,
+      p2.dy / PLAYER_JUMP_SPEED,
+      p2.health / PLAYER_HP,
+      p2.shield / PLAYER_MAX_SHIELD,
+      p2.energy /PLAYER_MAX_ENERGY,
       p2.shield_equipped? 1: 0];
 
     game_frame2 = game_frame2.concat(this.get_projectiles(p2));

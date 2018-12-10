@@ -63,6 +63,7 @@ class FrameBuffer {
             var state_len = state2.length;
             var action = this.actions[i];
             var reward = state[state_len - 12] + state2[state_len - 28] - state[state_len - 28] - state2[state_len - 12]
+            
             experiences.push(new Experience(state, action, reward, state2));
         }
 
