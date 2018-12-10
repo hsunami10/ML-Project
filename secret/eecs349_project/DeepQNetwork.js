@@ -10,7 +10,7 @@ ACTIONS = 32;
 FRAME_SIZE = 32;
 DISCOUNT_RATE = 0.9;
 EXPLORATION_RATE = 0.005;
-LEARNING_RATE = 0.05;
+LEARNING_RATE = 0.005;
 
 class DeepQNetwork {
   constructor(layers, frames, frame_skip) {
