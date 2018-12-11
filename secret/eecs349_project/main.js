@@ -85,14 +85,22 @@ var keylistener = function(e) {
     default: break; // do not block other keys
   }
 }
+var doc = document.documentElement;
+var left = (window.pageXOffset || doc.scrollLeft) - (doc.clientLeft || 0);
+var top2 = (window.pageYOffset || doc.scrollTop)  - (doc.clientTop || 0);
+console.log(left);
+console.log(top2);
 document.addEventListener('keydown', keylistener);
 document.addEventListener('keyup', keylistener);
 var rect = document.getElementById('canvas').getBoundingClientRect();
 // Add mouse listeners
 var mouse_position = { x: 0, y: 0 };
 var mouse_move = function(e) {
-  mouse_position.x = e.clientX - rect.left;
-  mouse_position.y = e.clientY - rect.top;
+  top2 = (window.pageYOffset || doc.scrollTop)  - (doc.clientTop || 0);
+  left = (window.pageXOffset || doc.scrollLeft) - (doc.clientLeft || 0);
+  mouse_position.x = e.clientX - rect.left + left;
+  mouse_position.y = e.clientY - rect.top + top2;
+  
 }
 var mouse_up = function(e) {
   mouse_move(e);
